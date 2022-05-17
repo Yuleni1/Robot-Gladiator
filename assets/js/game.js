@@ -32,45 +32,49 @@ return false;
 
 
 
-
 var fight = function(enemy) {
-    while (playerInfo.health > 0 && enemy.health > 0) {
-    if (fightOrSkip()) {
-    break;
-      }
-      
-  
-var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
+  // keep track of who goes first
+  var isPlayerTurn = true;
 
+  // randomly change turn order
+  if (Math.random() > 0.5) {
+    isPlayerTurn = false;
+  }
+
+  while (playerInfo.health > 0 && enemy.health > 0) {
+    if (isPlayerTurn) {
+    if (fightOrSkip()) {
+    break;}
+
+  var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
       enemy.health = Math.max(0, enemy.health - damage);
-      console.log(playerInfo.name + ' attacked ' + enemy.name + '. ' + enemy.name + ' now has ' + enemy.health + ' health remaining.');
-  
+      console.log( playerInfo.name +" attacked " +enemy.name + ". " + enemy.name + " now has " +enemy.health + " health remaining.");
+
       if (enemy.health <= 0) {
-      window.alert(enemy.name + ' has died!');
-      break;} 
-        
-      else {
-        window.alert(enemy.name + ' still has ' + enemy.health + ' health left.');}
-  
-var damage = randomNumber(enemy.attack - 3, enemy.attack);
-    
-    playerInfo.health = Math.max(0, playerInfo.health - damage);
-    console.log(enemy.name + ' attacked ' + playerInfo.name + '. ' + playerInfo.name + ' now has ' + playerInfo.health + ' health remaining.');
-  
-      if (playerInfo.health <= 0) {
-        window.alert(playerInfo.name + ' has died!');
-        break;}
+        window.alert(enemy.name + " has died!");
+        playerInfo.money = playerInfo.money + 20;
+        break;} 
         
         else {
-        window.alert(playerInfo.name + ' still has ' + playerInfo.health + ' health left.');}
+        window.alert(enemy.name + " still has " + enemy.health + " health left.");}
+  
+      } 
+      
+      else {
+      var damage = randomNumber(enemy.attack - 3, enemy.attack);
+      playerInfo.health = Math.max(0, playerInfo.health - damage);
+      console.log(enemy.name + " attacked " +playerInfo.name +". " +playerInfo.name +" now has " + playerInfo.health +" health remaining.");
 
-    } // end of while loop
-  }; // end of fight function
-
-//fight();
-
-
-
+      if (playerInfo.health <= 0) {
+        window.alert(playerInfo.name + " has died!");
+        break;}
+        else {
+        window.alert(playerInfo.name + " still has " + playerInfo.health + " health left.");}
+    }
+    // switch turn order for next round
+    isPlayerTurn = !isPlayerTurn;
+  } // end of while loop
+}; // end of fight function
 
 var startGame = function(){
     playerInfo.reset();
@@ -106,21 +110,28 @@ else {
 var endGame = function() {
     window.alert("The game has now ended. Let's see how you did!");
 
-    if (playerInfo.health > 0) {
-        window.alert("Great job, you've survived the game! You now have a score of " + playerInfo.money + ".");
-      } 
-      else {
-        window.alert("You've lost your robot in battle.");
-      }
-      var playAgainConfirm = window.confirm("Would you like to play again?");
 
-    if (playAgainConfirm) {
- 
-    startGame();
-    }
+var highScore = localStorage.getItem("highscore");
+if (highScore === null) {
+  highScore = 0;
+}
 
-    else {
-    window.alert("Thank you for playing Robot Gladiators! Come back soon!");
+if (playerInfo.money > highScore) {
+  localStorage.setItem("highscore", playerInfo.money);
+  localStorage.setItem("name", playerInfo.name);
+
+  alert(playerInfo.name + " now has the high score of " + playerInfo.money + "!");}
+
+  else {
+    alert(playerInfo.name + "did not beat the high score of " + highScore +". Maybe next time!");}
+  
+
+  var playAgainConfirm = window.confirm("Would you like to play again?");
+  if (playAgainConfirm) {
+  startGame();}
+
+  else {
+  window.alert("Thank you for playing Robot Gladiators! Come back soon!");
 }
 };
 
@@ -194,10 +205,9 @@ var playerInfo = {
 
     else {
         window.alert("You don't have enough money!");
-      }
+     }
   }
-
-  };
+};
 
 
 var enemyInfo = [
